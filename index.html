@@ -1,0 +1,196 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Game Launcher</title>
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+<style>
+body {
+  margin: 0;
+  font-family: 'Segoe UI', sans-serif;
+  background: black;
+  color: #00ffcc;
+  overflow: hidden;
+}
+
+/* Animated background */
+body::before {
+  content: "";
+  position: fixed;
+  width: 200%;
+  height: 200%;
+  background: radial-gradient(circle, #00ffcc22 1px, transparent 1px);
+  background-size: 40px 40px;
+  animation: moveBg 20s linear infinite;
+  z-index: 0;
+}
+
+@keyframes moveBg {
+  from { transform: translate(0,0); }
+  to { transform: translate(-200px,-200px); }
+}
+
+header {
+  height: 55px;
+  background: rgba(0,0,0,0.8);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 15px;
+  border-bottom: 1px solid #00ffcc33;
+  z-index: 2;
+  position: relative;
+}
+
+.menu-btn {
+  display: none;
+  font-size: 22px;
+  cursor: pointer;
+}
+
+.container {
+  display: flex;
+  height: calc(100vh - 55px);
+  position: relative;
+  z-index: 1;
+}
+
+/* Sidebar */
+.sidebar {
+  width: 220px;
+  background: rgba(0,0,0,0.9);
+  border-right: 1px solid #00ffcc22;
+  overflow-y: auto;
+  transition: 0.3s;
+}
+
+.game {
+  padding: 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #00ffcc11;
+}
+
+.game:hover {
+  background: #00ffcc22;
+  box-shadow: inset 0 0 10px #00ffcc55;
+}
+
+/* Viewer */
+.viewer {
+  flex: 1;
+  position: relative;
+}
+
+iframe {
+  width: 100%;
+  height: 100%;
+  border: none;
+  background: black;
+}
+
+.controls {
+  position: absolute;
+  top: 10px;
+  right: 10px;
+}
+
+button {
+  background: #00ffcc22;
+  border: 1px solid #00ffcc55;
+  color: #00ffcc;
+  padding: 6px 10px;
+  margin-left: 5px;
+  cursor: pointer;
+  border-radius: 6px;
+}
+
+/* Mobile */
+@media (max-width: 700px) {
+  .sidebar {
+    position: absolute;
+    left: -220px;
+    height: 100%;
+  }
+
+  .sidebar.open {
+    left: 0;
+  }
+
+  .menu-btn {
+    display: block;
+  }
+}
+</style>
+</head>
+
+<body>
+
+<header>
+  <span class="menu-btn" onclick="toggleMenu()">☰</span>
+  <span>⚡ GAME LAUNCHER</span>
+</header>
+
+<div class="container">
+
+  <div class="sidebar" id="sidebar">
+    <div class="game" onclick="loadGame('games/game1/index.html')">Game 1</div>
+    <div class="game" onclick="loadGame('games/game2/index.html')">Game 2</div>
+  </div>
+
+  <div class="viewer">
+    <div class="controls">
+      <button onclick="fullscreen()">⛶</button>
+      <button onclick="reloadGame()">⟳</button>
+    </div>
+    <iframe id="frame"></iframe>
+  </div>
+
+</div>
+
+<script>
+let currentGame = "";
+
+/* Load game */
+function loadGame(path) {
+  currentGame = path;
+  document.getElementById("frame").src = path;
+
+  /* Save last played */
+  localStorage.setItem("lastGame", path);
+
+  /* Close menu on mobile */
+  document.getElementById("sidebar").classList.remove("open");
+}
+
+/* Reload */
+function reloadGame() {
+  if (currentGame) {
+    document.getElementById("frame").src = currentGame;
+  }
+}
+
+/* Fullscreen */
+function fullscreen() {
+  const frame = document.getElementById("frame");
+  if (frame.requestFullscreen) {
+    frame.requestFullscreen();
+  }
+}
+
+/* Mobile menu */
+function toggleMenu() {
+  document.getElementById("sidebar").classList.toggle("open");
+}
+
+/* Load last game on startup */
+window.onload = function() {
+  const saved = localStorage.getItem("lastGame");
+  if (saved) {
+    loadGame(saved);
+  }
+};
+</script>
+
+</body>
+</html>
